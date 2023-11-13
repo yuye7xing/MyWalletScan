@@ -26,7 +26,7 @@ import {
     SyncOutlined,
     UploadOutlined
 } from "@ant-design/icons";
-import {getStark} from "@utils/stark/main.js";
+import {getStarkData} from "@utils/getStarkData/main.js";
 import './index.css'
 import copy from "copy-to-clipboard";
 import deleteData from "@utils/indexedDB/deleteData.js";
@@ -140,13 +140,13 @@ const Stark = () => {
                 );
             },
         },
-        {
-            title: "StarkId",
-            dataIndex: ["accountInfo", "starkId"],
-            key: "starkId",
-            align: "center",
-            render: (text) => text,
-        },
+        // {
+        //     title: "StarkId",
+        //     dataIndex: ["accountInfo", "starkId"],
+        //     key: "starkId",
+        //     align: "center",
+        //     render: (text) => text,
+        // },
         {
             title: "StarkNet",
             children: [
@@ -183,14 +183,14 @@ const Stark = () => {
                 {
                     title: "Tx",
                     dataIndex: "tx",
-                    key: "stark_tx_amount",
+                    dataIndex: ["account", "nonce"],
                     align: "center",
                     sorter: (a, b) => a.tx - b.tx,
                 },
                 {
                     title: "最后交易",
                     dataIndex: "lastTime",
-                    key: "stark_latest_tx",
+                    dataIndex: ["activity", "lastTransactionTimeAgo"],
                     align: "center",
                     render: (text, record) => <a href={`https://voyager.online/contract/${record.address}`}
                                                  target="_blank">{text}</a>,
@@ -201,33 +201,15 @@ const Stark = () => {
                     children: [
                         {
                             title: "L1->L2",
-                            dataIndex: ["bridge", "DepositTx"],
+                            dataIndex: ["bridge", "l1_l2_amount"],
                             align: "center",
                         },
                         {
                             title: "L2->L1",
-                            dataIndex: ["bridge", "WithdrawTx"],
+                            dataIndex: ["bridge", "l2_l1_amount"],
                             align: "center",
                         },
                     ]
-                },
-                {
-                    title: "官方桥金额(U)",
-                    className: "stark_cross_amount",
-                    children: [
-                        {
-                            title: "L1->L2",
-                            dataIndex: ["bridge", "DepositVolume"],
-                            align: "center",
-
-                        },
-                        {
-                            title: "L2->L1",
-                            dataIndex: ["bridge", "WithdrawVolume"],
-                            align: "center",
-                        }
-                    ]
-
                 },
                 {
                     title: "活跃统计",
@@ -249,11 +231,6 @@ const Stark = () => {
                             align: "center",
                         },
                         {
-                            title: "合约",
-                            dataIndex: ["activity", "contractActivity"],
-                            align: "center",
-                        },
-                        {
                             title: "Vol(U)",
                             dataIndex: "Vol",
                             align: "center",
@@ -261,7 +238,7 @@ const Stark = () => {
                         },
                         {
                             title: "fee(E)",
-                            dataIndex: "fee",
+                            dataIndex: ["activity", "fee"],
                             align: "center",
                             sorter: (a, b) => a.fee - b.fee,
                         }
@@ -362,7 +339,7 @@ const Stark = () => {
                             }
                             return updatedData;
                         });
-                        const response = await getStark(address);
+                        const response = await getStarkData(address);
                         setData(prevData => {
                             const updatedData = [...prevData];
                             const index = updatedData.findIndex(item => item.address === address);
@@ -446,13 +423,10 @@ const Stark = () => {
                                 return updatedData;
                             });
 
-                            const response = await getStark(data[index].address);
+                            const response = await getStarkData(data[index].address);
                             setData(prevData => {
                                 const updatedData = [...prevData];
-                                updatedData[index] = {
-                                    ...updatedData[index],
-                                    ...response,
-                                };
+                                updatedData[index] =Object.assign(updatedData[index],response)
                                 localStorage.setItem('stark_addresses', JSON.stringify(updatedData));
                                 return updatedData;
                             });

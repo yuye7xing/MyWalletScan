@@ -30,7 +30,7 @@ export async function getBridge(address) {
         let l1_l2_amount = 0;
         let l2_l1_amount = 0;
         let page = 1;
-        let price = await getTokenPrices()
+        // let price = await getTokenPrices()
         let bridgeList = []
         while (true) {
             const response = await axios.get(`https://voyager.online/api/contract/${address}/bridgeTransactions?ps=50&p=${page}`)
@@ -45,11 +45,11 @@ export async function getBridge(address) {
             const {token_id, amount, type} = bridge
             if (type === 0) {
                 l1_l2++;
-                l1_l2_amount += amount * price[token_id];
+                l1_l2_amount += amount/10**18;
             }
             if (type === 2) {
                 l2_l1++;
-                l2_l1_amount += amount * price[token_id];
+                l2_l1_amount += amount /10**18;
             }
 
         })

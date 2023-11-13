@@ -17,7 +17,7 @@ export const getStarkData = async (address) => {
             activity,
             bridge,
             account,
-            tokenBalance
+            balance
         ] = await Promise.all([
             getActivities(address, transactions),
             getBridge(address),
@@ -29,8 +29,9 @@ export const getStarkData = async (address) => {
             activity,
             bridge,
             account,
-            tokenBalance,
-            volume,
+            balance,
+            ...volume,
+            result: "success"
         };
     } catch (e) {
         return "error"

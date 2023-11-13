@@ -9,5 +9,5 @@ export const getVolume = (transactions) => {
         const tmpVolume = parseFloat(transfers[0].total_value)
         volume += tmpVolume;
     });
-    return {volume: volume.toFixed(3)}
+    return {Vol: volume.toFixed(3)}
 }

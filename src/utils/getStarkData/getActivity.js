@@ -47,21 +47,21 @@ const countAllTransactionPeriods = (address, transactions) => {
     });
     return {
         fee: fee.toFixed(3),
-        days: uniqueDays.size,
-        weeks: uniqueWeeks.size,
-        months: uniqueMonths.size,
+        dayActivity: uniqueDays.size,
+        weekActivity: uniqueWeeks.size,
+        monthActivity: uniqueMonths.size,
     };
 };
 
 export const getActivities = async (address, transactions) => {
-    const {fee, days, weeks, months} = countAllTransactionPeriods(address, transactions);
+    const {fee, dayActivity, weekActivity, monthActivity} = countAllTransactionPeriods(address, transactions);
     const lastTransaction = transactions[0];
     const lastTransactionTimeAgo = getTimeAgo(lastTransaction.timestamp) || '无交易';
     return {
         fee,
-        days,
-        weeks,
-        months,
+        dayActivity,
+        weekActivity,
+        monthActivity,
         lastTransactionTimeAgo,
     }
 }
