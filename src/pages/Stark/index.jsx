@@ -182,14 +182,12 @@ const Stark = () => {
                 },
                 {
                     title: "Tx",
-                    dataIndex: "tx",
                     dataIndex: ["account", "nonce"],
                     align: "center",
                     sorter: (a, b) => a.tx - b.tx,
                 },
                 {
                     title: "最后交易",
-                    dataIndex: "lastTime",
                     dataIndex: ["activity", "lastTransactionTimeAgo"],
                     align: "center",
                     render: (text, record) => <a href={`https://voyager.online/contract/${record.address}`}
@@ -509,15 +507,15 @@ const Stark = () => {
         let totalFee = 0;
 
         pageData.forEach((row) => {
-            totalEthBalance += parseFloat(row.balance?.ETH || 0);
-            totalUsdcBalance += parseFloat(row.balance?.USDC || 0);
-            totalUsdtBalance += parseFloat(row.balance?.USDT || 0);
-            totalDaiBalance += parseFloat(row.balance?.DAI || 0);
-            totalWBTCBalance += parseFloat(row.balance?.WBTC || 0);
-            totalL1Tol2Amount += parseFloat(row.bridge?.DepositVolume || 0);
-            totalL2Tol1Amount += parseFloat(row.bridge?.WithdrawVolume || 0);
-            totalAmount += parseFloat(row.Vol || 0);
-            totalFee += parseFloat(row.fee || 0);
+            totalEthBalance += parseFloat(row.balance?.ETH || 0)||0;
+            totalUsdcBalance += parseFloat(row.balance?.USDC || 0)||0;
+            totalUsdtBalance += parseFloat(row.balance?.USDT || 0)||0;
+            totalDaiBalance += parseFloat(row.balance?.DAI || 0)||0;
+            totalWBTCBalance += parseFloat(row.balance?.WBTC || 0)||0;
+            totalL1Tol2Amount += parseFloat(row.bridge?.DepositVolume || 0)||0;
+            totalL2Tol1Amount += parseFloat(row.bridge?.WithdrawVolume || 0)||0;
+            totalAmount += parseFloat(row.Vol || 0)||0;
+            totalFee += parseFloat(row?.activity?.fee || 0)||0;
         });
 
         return (
@@ -531,66 +529,60 @@ const Stark = () => {
                     <Table.Summary.Cell index={1}/>
                     <Table.Summary.Cell index={2}/>
                     <Table.Summary.Cell index={3}/>
-                    <Table.Summary.Cell index={4}/>
-                    <Table.Summary.Cell index={5}>
+                    <Table.Summary.Cell index={4}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalEthBalance)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={6}>
+                    <Table.Summary.Cell index={5}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalUsdcBalance)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={7}>
+                    <Table.Summary.Cell index={6}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalUsdtBalance)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={8}>
+                    <Table.Summary.Cell index={7}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalDaiBalance)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={9}>
+                    <Table.Summary.Cell index={8}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalWBTCBalance)}</Text>
                         </div>
                     </Table.Summary.Cell>
+                    <Table.Summary.Cell index={9}/>
                     <Table.Summary.Cell index={10}/>
                     <Table.Summary.Cell index={11}/>
                     <Table.Summary.Cell index={12}/>
-                    <Table.Summary.Cell index={13}/>
-                    <Table.Summary.Cell index={14}>
+                    <Table.Summary.Cell index={13}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalL1Tol2Amount, 2)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={15}>
+                    <Table.Summary.Cell index={14}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalL2Tol1Amount, 2)}</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={16}/>
-                    <Table.Summary.Cell index={17}/>
-                    <Table.Summary.Cell index={18}/>
-                    <Table.Summary.Cell index={19}/>
-                    <Table.Summary.Cell index={20}>
+                    <Table.Summary.Cell index={15}/>
+                    <Table.Summary.Cell index={16}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
                                 {formatNumber(totalAmount, 2)}
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={21}>
+                    <Table.Summary.Cell index={17}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
-                                {formatNumber(totalFee, 2)}
+                                {formatNumber(totalFee, 4)}
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={22}/>
-                    <Table.Summary.Cell index={23}/>
                 </Table.Summary.Row>
             </Table.Summary>
         );

@@ -438,6 +438,18 @@ function Zksync() {
                     align: "center",
                 },
                 {
+                    title: "dlpm",
+                    dataIndex: ['zksEraBalance', "zks2_dlpm_balance"],
+                    key: "zks2_dlpm_balance",
+                    align: "center",
+                },
+                {
+                    title: "LP",
+                    dataIndex: ['zksEraBalance', "zks2_lp_balance"],
+                    key: "zks2_lp_balance",
+                    align: "center",
+                },
+                {
                     title: "Tx",
                     dataIndex: ['zksEraBalance', "zks2_tx_amount"],
                     key: "zks2_tx_amount",
@@ -694,8 +706,10 @@ function Zksync() {
         let totalZkLiteEthBalance = 0;
         let totalZkEraEthBalance = 0;
         let totalZkEraUsdcBalance = 0;
+        let totalZkEradlpmBalance=0;
         let totalL1Tol2Amount = 0;
         let totalL2Tol1Amount = 0;
+        let totalZkErasyncBalance=0;
         let totalAmount = 0;
         let totalFee = 0;
 
@@ -704,6 +718,8 @@ function Zksync() {
             totalZkLiteEthBalance += parseFloat(row.zksLiteBalance?.zks1_balance || 0);
             totalZkEraEthBalance += parseFloat(row.zksEraBalance?.zks2_balance || 0);
             totalZkEraUsdcBalance += parseFloat(row.zksEraBalance?.zks2_usdcBalance || 0);
+            totalZkEradlpmBalance += parseFloat(row.zksEraBalance?.zks2_dlpm_balance || 0);
+            totalZkErasyncBalance += parseFloat(row.zksEraBalance?.zks2_lp_balance || 0);
             totalL1Tol2Amount += parseFloat(row.bridge?.l1Tol2Amount || 0);
             totalL2Tol1Amount += parseFloat(row.bridge?.l2Tol1Amount || 0);
             totalAmount += parseFloat(row.totalExchangeAmount || 0);
@@ -750,18 +766,33 @@ function Zksync() {
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={11}/>
+                    <Table.Summary.Cell index={11}>
+                        <div style={centeredTextStyle}>
+                            <Text type="danger">
+                                {formatNumber(totalZkEradlpmBalance, 2)}
+                            </Text>
+                        </div>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell index={12}>
+                        <div style={centeredTextStyle}>
+                            <Text type="danger">
+                                {formatNumber(totalZkErasyncBalance, 3)}
+                            </Text>
+                        </div>
+                    </Table.Summary.Cell>
                     <Table.Summary.Cell index={12}/>
                     <Table.Summary.Cell index={13}/>
                     <Table.Summary.Cell index={14}/>
-                    <Table.Summary.Cell index={15}>
+                    <Table.Summary.Cell index={15}/>
+                    <Table.Summary.Cell index={16}/>
+                    <Table.Summary.Cell index={17}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
                                 {formatNumber(totalL1Tol2Amount)}
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={16}>
+                    <Table.Summary.Cell index={18}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
                                 {formatNumber(totalL2Tol1Amount)}

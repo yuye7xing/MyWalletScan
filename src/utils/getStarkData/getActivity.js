@@ -46,7 +46,7 @@ const countAllTransactionPeriods = (address, transactions) => {
         uniqueMonths.add(`${year} -${month}`);
     });
     return {
-        fee: fee.toFixed(3),
+        fee: fee.toFixed(5),
         dayActivity: uniqueDays.size,
         weekActivity: uniqueWeeks.size,
         monthActivity: uniqueMonths.size,
