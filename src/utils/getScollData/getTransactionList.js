@@ -3,82 +3,33 @@ import {getEthPrice} from "@utils";
 import {dbConfig, initDB, update} from "@utils/indexedDB/main.js";
 
 
-const getAllTransfers = async (address) => {
-    let url = `https://block-explorer-api.mainnet.zksync.io/address/${address}/transfers?limit=100&page=1`;
-    const transfers = [];
-
-    while (true) {
-        try {
-            const response = await axios.get(url);
-            if (response.status === 200) {
-                const data = response.data.items;
-                transfers.push(...data);
-                if (response.data.links.next === '') break;
-                url = 'https://block-explorer-api.mainnet.zksync.io/' + response.data.links.next;
-            } else {
-                console.error('Error occurred while retrieving transactions.');
-                break;
-            }
-        } catch (error) {
-            console.error('Error occurred while making the request:', error);
-            break;
-        }
-    }
-
-    return transfers;
-};
-
-const assignTransferValues = async (transactions) => {
-    const ethResponse = await axios.post('https://mainnet.era.zksync.io/', {
-        id: 42,
-        jsonrpc: '2.0',
-        method: 'zks_getTokenPrice',
-        params: ['0x0000000000000000000000000000000000000000'],
-    });
-    const tokensPrice = {
-        USDC: 1,
-        USDT: 1,
-        ZKUSD: 1,
-        CEBUSD: 1,
-        LUSD: 1,
-        ETH: parseInt(ethResponse.data.result),
-    };
-
-    transactions.forEach((transaction) => {
-        transaction.transfers.forEach((transfer) => {
-            transfer.token.price = tokensPrice[transfer.token.symbol.toUpperCase()];
-        });
-        transaction.transfers = transaction.transfers.filter((transfer) => transfer.token.price !== undefined);
-    });
-};
-
 export const getTransactionsList = async (address) => {
-    let url = `https://block-explorer-api.mainnet.zksync.io/transactions?address=${address}&limit=100&page=1`;
+    let url = `https://www.oklink.com/api/v5/explorer/address/transaction-list?address=${address}&limit=100&chainShortName=SCROLL`;
     const transactions = [];
     const ethResponse = await getEthPrice();
+    let page="1";
     while (true) {
         try {
-            const response = await axios.get(url);
+            const response = await axios.get(url,{params: { page: page }, headers: { 'Ok-Access-Key': 'a265f83b-c7b5-47ab-b23e-a427ea0b9f3d'}});
             if (response.status === 200) {
-                const data = response.data.items;
+                const data = response.data.data[0].transactionLists;
                 data.forEach((transaction) => {
-                    const {hash, to, from, data, isL1Originated, fee, receivedAt, value} = transaction;
+                    const {txId, to, from, data, isL1Originated, txFee, transactionTime, amount} = transaction;
                     transactions.push({
-                        hash: hash,
+                        hash: txId,
                         to: to,
                         from: from,
                         data: data,
                         isL1Originated: isL1Originated,
-                        fee: fee,
-                        receivedAt: receivedAt,
+                        fee: txFee,
+                        receivedAt: transactionTime,
                         transfers: [],
                         ethValue: parseInt(ethResponse),
-                        value: value,
+                        value: amount,
                     });
                 });
-
-                if (response.data.links.next === '') break;
-                url = 'https://block-explorer-api.mainnet.zksync.io/' + response.data.links.next;
+                if(response.data.data[0].page==response.data.data[0].totalPage) break;
+                page=response.data.data[0].page+1;
             } else {
                 console.error('Error occurred while retrieving transactions.');
                 break;
@@ -89,21 +40,9 @@ export const getTransactionsList = async (address) => {
         }
     }
 
-    const transfers = await getAllTransfers(address);
-
-    transfers.forEach((transfer) => {
-        if (transfer.token === null) return;
-        transactions.forEach((transaction) => {
-            if (transaction.hash === transfer.transactionHash) {
-                transaction.transfers.push(transfer);
-            }
-        });
-    });
-
-    await assignTransferValues(transactions);
 
     await initDB(dbConfig)
-    await update("zkTransactions", {
+    await update("scollTransactions", {
         address: address,
         data: JSON.stringify(transactions)
     })

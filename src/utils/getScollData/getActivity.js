@@ -36,7 +36,7 @@ const countAllTransactionPeriods = (address, transactions) => {
     const uniqueContracts = new Set();
     transactions.forEach((transaction) => {
         if (transaction.from.toLowerCase() !== address.toLowerCase()) return;
-        const timestamp = new Date(transaction.receivedAt);
+        const timestamp = new Date(Number(transaction.receivedAt));
         const year = timestamp.getFullYear();
         const month = timestamp.getMonth();
         const day = timestamp.getDate();
@@ -70,7 +70,7 @@ export const getActivities = async (address, transactions) => {
         contractActivity
     } = countAllTransactionPeriods(address, transactions);
     const lastTransaction = transactions[0];
-    const zks2_last_tx = getTimeAgo(lastTransaction.receivedAt) || i18n.t('noTransaction');
+    const zks2_last_tx = getTimeAgo(Number(lastTransaction.receivedAt)) || i18n.t('noTransaction');
     return {
         dayActivity,
         weekActivity,

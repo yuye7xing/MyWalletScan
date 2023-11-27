@@ -38,7 +38,7 @@ const router = [
                 element: <Linea/>
             },
             {
-                path: '/Scoll',
+                path: '/scoll',
                 element: <Scoll/>,
             },
             {

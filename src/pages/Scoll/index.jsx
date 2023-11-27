@@ -27,7 +27,6 @@ import {
 } from "@ant-design/icons";
 import {EyeOutlined, EyeInvisibleOutlined} from "@ant-design/icons"
 import {getAllScollData} from "@utils/getScollData/index.js";
-import EcosystemModal from "@components/EcosystemModal/index.jsx";
 import {useTranslation} from "react-i18next";
 import {dbConfig, get, initDB} from "@utils/indexedDB/main.js";
 import deleteData from "@utils/indexedDB/deleteData.js";
@@ -42,7 +41,6 @@ function Scoll() {
     const [data, setData] = useState([]);
     const [hideColumn, setHideColumn] = useState(true);
     const [isBatchModalVisible, setIsBatchModalVisible] = useState(false);
-    const [ecosystemModalVisible, setEcosystemModalVisible] = useState(false);
     const [batchForm] = Form.useForm();
     const [selectedKeys, setSelectedKeys] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +59,7 @@ function Scoll() {
     useEffect(() => {
         setTableLoading(true);
 
-        const storedAddresses = localStorage.getItem('addresses');
+        const storedAddresses = localStorage.getItem('scoll_addresses');
         setTimeout(() => {
             setTableLoading(false);
         }, 500);
@@ -76,7 +74,7 @@ function Scoll() {
     useEffect(() => {
         if (!initialized) return;
 
-        localStorage.setItem('addresses', JSON.stringify(data));
+        localStorage.setItem('scoll_addresses', JSON.stringify(data));
     }, [data, initialized]);
     const handleRefresh = async (singleKey) => {
         const keys = singleKey ? [singleKey] : selectedKeys;
@@ -129,7 +127,7 @@ function Scoll() {
                                     ...updatedData[index],
                                     ...response,
                                 };
-                                localStorage.setItem('addresses', JSON.stringify(updatedData));
+                                localStorage.setItem('scoll_addresses', JSON.stringify(updatedData));
                                 return updatedData;
                             });
                             resolve();
@@ -271,7 +269,7 @@ function Scoll() {
     }
     const handleDelete = async (address) => {
         setData(data.filter(item => item.address !== address));
-        localStorage.setItem('addresses', JSON.stringify(data.filter(item => item.address !== address)));
+        localStorage.setItem('scoll_addresses', JSON.stringify(data.filter(item => item.address !== address)));
         await deleteData("zkProtocol", [address]);
         await deleteData("zkTransactions", [address]);
     }
@@ -288,7 +286,7 @@ function Scoll() {
         await deleteData("zkTransactions", addresses);
         await deleteData("zkProtocol", addresses);
         setData(data.filter(item => !selectedKeys.includes(item.key)));
-        localStorage.setItem('addresses', JSON.stringify(data.filter(item => !selectedKeys.includes(item.key))));
+        localStorage.setItem('scoll_addresses', JSON.stringify(data.filter(item => !selectedKeys.includes(item.key))));
         setSelectedKeys([]);
     }
     const rowSelection = {
@@ -339,7 +337,7 @@ function Scoll() {
                         icon={<EditOutlined/>}
                         onConfirm={() => {
                             setData([...data]);
-                            localStorage.setItem('addresses', JSON.stringify(data));
+                            localStorage.setItem('scoll_addresses', JSON.stringify(data));
                         }}
                         onCancel={() => {
                         }}
@@ -375,83 +373,19 @@ function Scoll() {
             },
         },
         {
-            title: "ETH",
-            key: "eth_group",
-            className: "zks_eth",
-            children: [
-                {
-                    title: "ETH",
-                    dataIndex: "eth_balance",
-                    key: "eth_balance",
-                    align: "center",
-                },
-                {
-                    title: "Tx",
-                    dataIndex: "eth_tx_amount",
-                    key: "eth_tx_amount",
-                    align: "center",
-                },
-            ],
-        },
-        {
-            title: "zkSyncLite",
-            key: "zks_lite_group",
-            className: "zks_lite",
-            children: [
-                {
-                    title: "ETH",
-                    dataIndex: ['zksLiteBalance', "zks1_balance"],
-                    key: "zks1_balance",
-                    align: "center",
-                },
-                {
-                    title: "Tx",
-                    dataIndex: ['zksLiteBalance', "zks1_tx_amount"],
-                    key: "zks1_tx_amount",
-                    align: "center",
-                    sorter: (a, b) => a.zksLiteBalance.zks1_tx_amount - b.zksLiteBalance.zks1_tx_amount,
-                },
-                {
-                    title: t('last_tx'),
-                    dataIndex: ['zksLiteBalance', "zks1_latest_tx"],
-                    key: "zks1_latest_tx",
-                    align: "center",
-                }
-            ],
-
-        },
-        {
-            title: "zkSyncEra",
+            title: "Scoll",
             key: "zks_era_group",
             className: "zks_era",
             children: [
                 {
                     title: "ETH",
-                    dataIndex: ['zksEraBalance', "zks2_balance"],
+                    dataIndex: ['scrollAddress', "balance"],
                     key: "zks2_balance",
                     align: "center",
                 },
                 {
-                    title: "USDC",
-                    dataIndex: ['zksEraBalance', "zks2_usdcBalance"],
-                    key: "zks2_usdcBalance",
-                    align: "center",
-                },
-                {
-                    title: "dlpm",
-                    dataIndex: ['zksEraBalance', "zks2_dlpm_balance"],
-                    key: "zks2_dlpm_balance",
-                    align: "center",
-                },
-                {
-                    title: "LP",
-                    dataIndex: ['zksEraBalance', "zks2_lp_balance"],
-                    key: "zks2_lp_balance",
-                    align: "center",
-                },
-                {
                     title: "Tx",
-                    dataIndex: ['zksEraBalance', "zks2_tx_amount"],
+                    dataIndex: ['scrollAddress', "transactionCount"],
                     key: "zks2_tx_amount",
                     align: "center",
                     sorter: (a, b) => a.zksEraBalance.zks2_tx_amount - b.zksEraBalance.zks2_tx_amount,
@@ -464,42 +398,6 @@ function Scoll() {
                     render: (text, record) => (
                         <a href={"https://explorer.zksync.io/address/" + record.address}
                            target={"_blank"}>{text}</a>),
-                },
-                {
-                    title: t('official_bridge_tx'),
-                    key: "cross_chain_tx_count_group",
-                    children: [
-                        {
-                            title: "L1->L2",
-                            dataIndex: ['bridge', "l1Tol2Times"],
-                            key: "l1Tol2Times",
-                            align: "center",
-                        },
-                        {
-                            title: "L2->L1",
-                            dataIndex: ['bridge', "l2Tol1Times"],
-                            key: "l2Tol1Times",
-                            align: "center",
-                        },
-                    ],
-                },
-                {
-                    title: t('official_bridge_amount'),
-                    key: "cross_chain_amount_group",
-                    children: [
-                        {
-                            title: "L1->L2",
-                            dataIndex: ['bridge', "l1Tol2Amount"],
-                            key: "l1Tol2Amount",
-                            align: "center",
-                        },
-                        {
-                            title: "L2->L1",
-                            dataIndex: ['bridge', "l2Tol1Amount"],
-                            key: "l2Tol1Amount",
-                            align: "center",
-                        },
-                    ],
                 },
                 {
                     title: t('activities'),
@@ -587,19 +485,6 @@ function Scoll() {
         //         }
         //     ]
         // },
-        {
-            title: "NFT是否可领",
-            key: "nft",
-            align: "center",
-            dataIndex: "isCanClaim",
-            render: (text) => (
-                <Space>
-                    {text && text === "yes" ? <Tag color="success">是</Tag> : null}
-                    {text && text === "no" ? <Tag color="error">否</Tag> : null}
-                    {text && text === "error" ? <Tag color="error">获取失败</Tag> : null}
-                </Space>
-            )
-        },
         {
             title: t("state"),
             key: "result",
@@ -734,9 +619,6 @@ function Scoll() {
                             <Text type={"danger"}>总计</Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={1}/>
-                    <Table.Summary.Cell index={2}/>
-                    <Table.Summary.Cell index={3}/>
                     <Table.Summary.Cell index={4}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">{formatNumber(totalEthBalance)}</Text>
@@ -750,8 +632,6 @@ function Scoll() {
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={7}/>
-                    <Table.Summary.Cell index={8}/>
                     <Table.Summary.Cell index={9}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
@@ -780,11 +660,6 @@ function Scoll() {
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={12}/>
-                    <Table.Summary.Cell index={13}/>
-                    <Table.Summary.Cell index={14}/>
-                    <Table.Summary.Cell index={15}/>
-                    <Table.Summary.Cell index={16}/>
                     <Table.Summary.Cell index={17}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
@@ -799,10 +674,6 @@ function Scoll() {
                             </Text>
                         </div>
                     </Table.Summary.Cell>
-                    <Table.Summary.Cell index={17}/>
-                    <Table.Summary.Cell index={18}/>
-                    <Table.Summary.Cell index={19}/>
-                    <Table.Summary.Cell index={20}/>
                     <Table.Summary.Cell index={21}>
                         <div style={centeredTextStyle}>
                             <Text type="danger">
@@ -828,7 +699,6 @@ function Scoll() {
     return (
         <div>
             <Content>
-                <EcosystemModal open={ecosystemModalVisible} onCancel={() => setEcosystemModalVisible(false)}/>
                 <Modal
                     title={addressDetail && addressDetail.address + '  ' + t('address_detail')}
                     open={showAddressDetailModal !== null}
@@ -885,16 +755,7 @@ function Scoll() {
                             justifyContent: 'space-between',
                             gap: '10px',
                         }}>
-                            <Button type="primary"
-                                    onClick={() => {
-                                        setEcosystemModalVisible(true)
-                                    }}
-                                    size="large"
-                                    style={{width: "20%"}}
-                                    icon={<AppstoreAddOutlined/>}
-                            >
-                                <span style={{color: 'white'}}>{t('ecosystem')}</span>
-                            </Button>
+                           
                             <Button type="primary" onClick={showBatchModal} size={"large"}
                                     style={{width: "20%"}}
                                     icon={<UploadOutlined/>}

@@ -70,7 +70,7 @@ export const getAllKeys = async (storeName) => {
 
 export const dbConfig = {
     name: "BitBoxTools",
-    version: 2,
+    version: 3,
     objectStoresMeta: [
         {
             store: "starkTransactions",
@@ -82,6 +82,14 @@ export const dbConfig = {
         },
         {
             store: "zkTransactions",
+            storeConfig: {keyPath: "address", autoIncrement: false},
+            storeSchema: [
+                {key: "address", value: "address"},
+                {key: "data", value: "data"},
+            ]
+        },
+        {
+            store: "scollTransactions",
             storeConfig: {keyPath: "address", autoIncrement: false},
             storeSchema: [
                 {key: "address", value: "address"},

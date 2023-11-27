@@ -53,6 +53,10 @@ const MenuHeader = () => {
             key: 'layer',
         },
         {
+            label: 'Scoll',
+            key: 'scoll',
+        },
+        {
             label: 'Coffee',
             key: 'coffee',
         },
