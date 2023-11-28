@@ -28,8 +28,9 @@ export const getTransactionsList = async (address) => {
                         value: amount,
                     });
                 });
+                if(!response.data.data[0].totalPage) break;
                 if(response.data.data[0].page==response.data.data[0].totalPage) break;
-                page=response.data.data[0].page+1;
+                page=Number(response.data.data[0].page)+1;
             } else {
                 console.error('Error occurred while retrieving transactions.');
                 break;

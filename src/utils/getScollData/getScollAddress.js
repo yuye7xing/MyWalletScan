@@ -8,6 +8,7 @@ export async function getScollAddress(address) {
         balance=Number(balance).toFixed(3);
         return {balance,transactionCount,lastTransactionTime};
     } catch (error) {
+        console.log("获取用户信息异常");
         return {balance: "-",  transactionCount: "-",lastTransactionTime:""};
     }
 }

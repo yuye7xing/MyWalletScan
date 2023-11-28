@@ -17,7 +17,7 @@ import {Layout, Card} from 'antd';
 
 const {Content} = Layout;
 import {
-    AppstoreAddOutlined, CheckCircleOutlined, CloseCircleOutlined,
+     CheckCircleOutlined, CloseCircleOutlined,
     DeleteOutlined,
     DownloadOutlined,
     EditOutlined,
@@ -88,14 +88,16 @@ function Scoll() {
         }
         setIsLoading(true);
         try {
-            const limit = 5;
+            const limit = 2;
             let activePromises = 0;
             let promisesQueue = [];
             const processQueue = () => {
                 while (promisesQueue.length > 0 && activePromises < limit) {
                     const promise = promisesQueue.shift();
                     activePromises += 1;
-                    promise().finally(() => {
+                    promise().finally(async() => {
+                        console.log("时间"+new Date());
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         activePromises -= 1;
                         processQueue();
                     });
@@ -140,7 +142,7 @@ function Scoll() {
             }
             processQueue();
             while (activePromises > 0 || promisesQueue.length > 0) {
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
             notification.success({
                 message: "完成",
@@ -444,47 +446,6 @@ function Scoll() {
                 },
             ],
         },
-        // {
-        //     title: (
-        //         <span>
-        //             <Space>
-        //             <span>Trustalabs</span>
-        //             <Checkbox
-        //                 checked={isGetTustalabsData}
-        //                 onChange={(e) => {
-        //                     setIsGetTustalabsData(e.target.checked);
-        //                     localStorage.setItem('isGetTustalabsData', e.target.checked);
-        //                 }}/>
-        //                 </Space>
-        //         </span>
-        //     ),
-        //     key: 'trustData',
-        //     className: "trustData",
-        //     children: [
-        //         {
-        //             title: t('score'),
-        //             key: 'score',
-        //             dataIndex: ['trustData', 'score'],
-        //             align: 'center',
-        //             sorter: (a, b) => a.trustData.score - b.trustData.score,
-        //         },
-        //         {
-        //             title: t('rank'),
-        //             key: 'rank',
-        //             dataIndex: ['trustData', 'rank'],
-        //             align: 'center',
-        //             sorter: (a, b) => a.trustData.rank - b.trustData.rank,
-        //         },
-        //         {
-        //             title: 'Top',
-        //             key: 'top',
-        //             dataIndex: ['trustData', 'top'],
-        //             align: 'center',
-        //             render: (text) => (text !== "-" && text ? text.toString() + "%" : text),
-        //             sorter: (a, b) => a.trustData.top - b.trustData.top,
-        //         }
-        //     ]
-        // },
         {
             title: t("state"),
             key: "result",
